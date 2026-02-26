@@ -165,3 +165,10 @@ own name.
      - u32
      - Controls the maximum number of MAC address filters that can be assigned
        to a Virtual Function (VF).
+   * - ``ctf_queues``
+     - u32
+     - Bitmask that enables Cut-Through Forwarding (CTF) on a per-queue
+       basis. A value of 0 disables CTF on all queues. Each set bit enables
+       CTF for the corresponding queue. Bits beyond the driver's queue count
+       are ignored. Consult driver-specific documentation for the
+       bit-to-queue mapping.
