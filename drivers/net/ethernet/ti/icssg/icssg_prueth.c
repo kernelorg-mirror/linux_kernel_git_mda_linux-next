@@ -2442,6 +2442,12 @@ static int prueth_probe(struct platform_device *pdev)
 		sprintf(prueth->switch_id, "%s", dev_name(dev));
 	}
 
+	ret = icssg_devlink_register(prueth);
+	if (ret) {
+		dev_err(dev, "devlink registration failed: %d\n", ret);
+		goto unregister_notifiers;
+	}
+
 	dev_info(dev, "TI PRU ethernet driver initialized: %s EMAC mode\n",
 		 (!eth0_node || !eth1_node) ? "single" : "dual");
 
@@ -2450,6 +2456,11 @@ static int prueth_probe(struct platform_device *pdev)
 	if (eth0_node)
 		of_node_put(eth0_node);
 	return 0;
+
+unregister_notifiers:
+	icssg_devlink_unregister(prueth);
+	if (prueth->is_switchmode_supported)
+		prueth_unregister_notifiers(prueth);
 
 netdev_unregister:
 	for (i = 0; i < PRUETH_NUM_MACS; i++) {
@@ -2511,6 +2522,7 @@ static void prueth_remove(struct platform_device *pdev)
 	struct device_node *eth_node;
 	int i;
 
+	icssg_devlink_unregister(prueth);
 	prueth_unregister_notifiers(prueth);
 
 	for (i = 0; i < PRUETH_NUM_MACS; i++) {

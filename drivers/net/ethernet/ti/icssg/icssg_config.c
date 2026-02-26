@@ -559,6 +559,10 @@ int icssg_config(struct prueth *prueth, struct prueth_emac *emac, int slice)
 
 	emac_r30_cmd_init(emac);
 
+	/* Configure Cut-Through Forwarding */
+	if (prueth->is_switch_mode || prueth->is_hsr_offload_mode)
+		icssg_config_cut_thru(emac);
+
 	return 0;
 }
 EXPORT_SYMBOL_GPL(icssg_config);

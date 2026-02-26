@@ -246,6 +246,9 @@ struct prueth_emac {
 	u64 stats[ICSSG_NUM_MIIG_STATS];
 	u64 pa_stats[ICSSG_NUM_PA_STATS];
 
+	/* Cut-Through Forwarding queue bitmap (8 queues per port) */
+	u8 cut_thru_queue_map;
+
 	/* RX IRQ Coalescing Related */
 	struct hrtimer rx_hrtimer;
 	unsigned long rx_pace_timeout_ns;
@@ -321,6 +324,7 @@ struct icssg_firmwares {
  * @icssg_switch_firmwares: Firmware names for SWITCH mode, indexed per MAC
  * @icssg_hsr_firmwares: Firmware names for HSR mode, indexed per MAC
  * @icssg_prp_firmwares: Firmware names for PRP mode, indexed per MAC
+ * @devlink: devlink instance for CTF parameter support
  */
 struct prueth {
 	struct device *dev;
@@ -369,6 +373,13 @@ struct prueth {
 	struct icssg_firmwares icssg_switch_firmwares[PRUETH_NUM_MACS];
 	struct icssg_firmwares icssg_hsr_firmwares[PRUETH_NUM_MACS];
 	struct icssg_firmwares icssg_prp_firmwares[PRUETH_NUM_MACS];
+
+	/* Devlink */
+	struct devlink *devlink;
+};
+
+struct prueth_devlink {
+	struct prueth *prueth;
 };
 
 struct emac_tx_ts_response {
@@ -523,5 +534,10 @@ static inline bool prueth_xdp_is_enabled(struct prueth_emac *emac)
 {
 	return !!READ_ONCE(emac->xdp_prog);
 }
+
+/* Devlink support */
+int icssg_devlink_register(struct prueth *prueth);
+void icssg_devlink_unregister(struct prueth *prueth);
+void icssg_config_cut_thru(struct prueth_emac *emac);
 
 #endif /* __NET_TI_ICSSG_PRUETH_H */
