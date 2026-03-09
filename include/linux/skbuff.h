@@ -5014,6 +5014,9 @@ enum skb_ext_id {
 #if IS_ENABLED(CONFIG_CAN)
 	SKB_EXT_CAN,
 #endif
+#if IS_ENABLED(CONFIG_HSR)
+	SKB_EXT_HSR,
+#endif
 	SKB_EXT_NUM, /* must be last */
 };
 
